@@ -1,0 +1,11 @@
+@Fintrack.Api_HostAddress = http://localhost:5232
+
+GET {{Fintrack.Api_HostAddress}}/health
+Accept: text/plain
+
+###
+
+GET {{Fintrack.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
