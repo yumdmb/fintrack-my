@@ -1,14 +1,13 @@
 using System.Net;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Fintrack.Api.Tests;
 
-public sealed class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class HealthEndpointTests : IClassFixture<FintrackApiFactory>
 {
     private readonly HttpClient _client;
 
-    public HealthEndpointTests(WebApplicationFactory<Program> factory)
+    public HealthEndpointTests(FintrackApiFactory factory)
     {
         _client = factory.CreateClient();
     }
