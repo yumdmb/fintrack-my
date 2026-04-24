@@ -8,9 +8,6 @@ Fintrack is a learning-focused, Malaysia-ready e-invoice and expense management 
 backend/
   Fintrack.slnx
   Fintrack.Api/
-  Fintrack.Application/
-  Fintrack.Domain/
-  Fintrack.Infrastructure/
   tests/
 
 frontend/
@@ -27,7 +24,7 @@ compose.yaml
 
 ## Current stack
 
-- Backend: ASP.NET Core Web API, controller-based host, OpenAPI, ProblemDetails, health checks
+- Backend: ASP.NET Core Web API, single-project controller-based host, OpenAPI, ProblemDetails, health checks
 - Frontend: React, Vite, TypeScript, React Router, Axios
 - Database: PostgreSQL via Docker Compose
 - Secrets path: .NET user secrets for backend-sensitive development values
@@ -74,7 +71,7 @@ npm run dev --prefix frontend
 
 ## Secret and environment configuration
 
-Backend non-secret defaults live in:
+Backend non-secret defaults live in the single API project:
 
 - `backend/Fintrack.Api/appsettings.json`
 - `backend/Fintrack.Api/appsettings.Development.json`
@@ -98,7 +95,7 @@ VITE_PROXY_TARGET=http://localhost:5232
 
 ## Seeded admin bootstrap path
 
-The workspace now includes a repeatable configuration path for the initial development administrator via `.\scripts\set-dev-secrets.ps1`. The actual Identity-backed role and admin seeding flow will be wired in the next task group, but the credentials and company bootstrap values are already standardized and documented.
+The workspace now includes a repeatable configuration path for the initial development administrator via `.\scripts\set-dev-secrets.ps1`. The actual Identity-backed role and admin seeding flow will be wired in the next task group, but the credentials and company bootstrap values are already standardized and documented inside the single backend project setup.
 
 ## Useful commands
 

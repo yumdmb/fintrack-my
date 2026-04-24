@@ -1,7 +1,4 @@
-
 using Fintrack.Api.Configuration;
-using Fintrack.Application;
-using Fintrack.Infrastructure;
 
 namespace Fintrack.Api;
 
@@ -13,8 +10,6 @@ public partial class Program
 
         builder.Configuration.AddUserSecrets<Program>(optional: true);
 
-        builder.Services.AddApplication();
-        builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddControllers();
         builder.Services.AddHealthChecks();
         builder.Services.AddOpenApi();
