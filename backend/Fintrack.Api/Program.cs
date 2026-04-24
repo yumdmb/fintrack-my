@@ -1,6 +1,7 @@
 using Fintrack.Api.Auth;
 using Fintrack.Api.Configuration;
 using Fintrack.Api.Data;
+using Fintrack.Api.Invoices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +77,7 @@ public partial class Program
             .AddSignInManager()
             .AddDefaultTokenProviders();
         builder.Services.AddScoped<JwtTokenService>();
+        builder.Services.AddScoped<InvoiceService>();
         builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, JwtBearerOptionsSetup>();
         builder.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
