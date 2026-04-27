@@ -22,7 +22,7 @@ public sealed class UpsertInvoiceRequest : IValidatableObject
     public DateOnly? DueDate { get; init; }
 
     [StringLength(3, MinimumLength = 3)]
-    public string CurrencyCode { get; init; } = "MYR";
+    public string? CurrencyCode { get; init; }
 
     [Required, MinLength(1)]
     public IReadOnlyCollection<UpsertInvoiceLineItemRequest> LineItems { get; init; } = [];

@@ -92,6 +92,25 @@ public sealed class FintrackApiFactory : WebApplicationFactory<Program>
         return new SeededTestUser(user.Id, email, company.Id, company.Name, [role]);
     }
 
+    public async Task ConfigureCompanyComplianceAsync(
+        Guid companyId,
+        string registrationNumber = "202401000001",
+        string taxIdentificationNumber = "C1234567890",
+        string? salesAndServiceTaxNumber = "SST12345678",
+        string defaultCurrencyCode = "MYR")
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var company = await dbContext.Companies.SingleAsync(existingCompany => existingCompany.Id == companyId);
+        company.RegistrationNumber = registrationNumber;
+        company.TaxIdentificationNumber = taxIdentificationNumber;
+        company.SalesAndServiceTaxNumber = salesAndServiceTaxNumber;
+        company.DefaultCurrencyCode = defaultCurrencyCode;
+
+        await dbContext.SaveChangesAsync();
+    }
+
     private static void ThrowIfFailed(IdentityResult result, string message)
     {
         if (result.Succeeded)

@@ -1,4 +1,5 @@
 using Fintrack.Api.Auth;
+using Fintrack.Api.Dashboard;
 using Fintrack.Api.Configuration;
 using Fintrack.Api.Data;
 using Fintrack.Api.Expenses;
@@ -79,7 +80,9 @@ public partial class Program
             .AddDefaultTokenProviders();
         builder.Services.AddScoped<JwtTokenService>();
         builder.Services.AddScoped<InvoiceService>();
+        builder.Services.AddScoped<InvoiceExportService>();
         builder.Services.AddScoped<ExpenseService>();
+        builder.Services.AddScoped<DashboardService>();
         builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, JwtBearerOptionsSetup>();
         builder.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

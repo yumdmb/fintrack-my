@@ -1,15 +1,19 @@
+using System.Text;
 using System.Security.Claims;
 using Fintrack.Api.Data;
 using Fintrack.Api.Invoices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Fintrack.Api.Controllers;
 
 [ApiController]
 [Route("api/invoices")]
 [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Accountant},{AppRoles.Staff}")]
-public sealed class InvoicesController(InvoiceService invoiceService) : ControllerBase
+public sealed class InvoicesController(
+    InvoiceService invoiceService,
+    InvoiceExportService invoiceExportService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<IReadOnlyCollection<InvoiceSummaryResponse>>(StatusCodes.Status200OK)]
@@ -114,8 +118,106 @@ public sealed class InvoicesController(InvoiceService invoiceService) : Controll
             : NotFound();
     }
 
+    [HttpPost("{id:guid}/finalize")]
+    [ProducesResponseType<InvoiceResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InvoiceResponse>> Finalize(Guid id, CancellationToken cancellationToken)
+    {
+        if (!TryGetCompanyId(out var companyId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var finalized = await invoiceExportService.FinalizeAsync(companyId, id, cancellationToken);
+            if (!finalized)
+            {
+                return NotFound();
+            }
+
+            var invoice = await invoiceService.GetAsync(companyId, id, cancellationToken);
+            return invoice is null ? NotFound() : Ok(invoice);
+        }
+        catch (InvoiceExportValidationException exception)
+        {
+            return BadRequest(CreateValidationProblemDetails(exception.Errors, "Invoice finalization failed."));
+        }
+    }
+
+    [HttpGet("{id:guid}/export/json")]
+    [ProducesResponseType<InvoiceJsonExportResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InvoiceJsonExportResponse>> ExportJson(Guid id, CancellationToken cancellationToken)
+    {
+        if (!TryGetCompanyId(out var companyId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var export = await invoiceExportService.GetJsonAsync(companyId, id, cancellationToken);
+            return export is null ? NotFound() : Ok(export);
+        }
+        catch (InvoiceExportValidationException exception)
+        {
+            return BadRequest(CreateValidationProblemDetails(exception.Errors, "Invoice export failed."));
+        }
+    }
+
+    [HttpGet("{id:guid}/export/csv")]
+    [Produces("text/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportCsv(Guid id, CancellationToken cancellationToken)
+    {
+        if (!TryGetCompanyId(out var companyId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var export = await invoiceExportService.GetCsvAsync(companyId, id, cancellationToken);
+            return export is null
+                ? NotFound()
+                : Content(export, "text/csv", Encoding.UTF8);
+        }
+        catch (InvoiceExportValidationException exception)
+        {
+            return BadRequest(CreateValidationProblemDetails(exception.Errors, "Invoice export failed."));
+        }
+    }
+
     private bool TryGetCompanyId(out Guid companyId)
     {
         return Guid.TryParse(User.FindFirstValue("company_id"), out companyId);
+    }
+
+    private static ValidationProblemDetails CreateValidationProblemDetails(
+        IReadOnlyDictionary<string, string[]> errors,
+        string title)
+    {
+        var modelState = new ModelStateDictionary();
+        foreach (var (key, values) in errors)
+        {
+            foreach (var value in values)
+            {
+                modelState.AddModelError(key, value);
+            }
+        }
+
+        return new ValidationProblemDetails(modelState)
+        {
+            Title = title,
+            Status = StatusCodes.Status400BadRequest
+        };
     }
 }

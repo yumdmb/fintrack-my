@@ -46,6 +46,7 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
     {
         var invoiceNumber = NormalizeRequired(request.InvoiceNumber);
         await ThrowIfInvoiceNumberExistsAsync(companyId, invoiceNumber, excludeInvoiceId: null, cancellationToken);
+        var defaultCurrencyCode = await GetCompanyDefaultCurrencyCodeAsync(companyId, cancellationToken);
 
         var invoice = new Invoice
         {
@@ -53,7 +54,7 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
             InvoiceNumber = invoiceNumber
         };
 
-        Apply(invoice, request, replaceTrackedLineItems: false);
+        Apply(invoice, request, replaceTrackedLineItems: false, defaultCurrencyCode);
 
         dbContext.Invoices.Add(invoice);
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -75,9 +76,10 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
 
         var invoiceNumber = NormalizeRequired(request.InvoiceNumber);
         await ThrowIfInvoiceNumberExistsAsync(companyId, invoiceNumber, invoiceId, cancellationToken);
+        var defaultCurrencyCode = await GetCompanyDefaultCurrencyCodeAsync(companyId, cancellationToken);
 
         invoice.InvoiceNumber = invoiceNumber;
-        Apply(invoice, request, replaceTrackedLineItems: true);
+        Apply(invoice, request, replaceTrackedLineItems: true, defaultCurrencyCode);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -137,14 +139,28 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
         }
     }
 
-    private void Apply(Invoice invoice, UpsertInvoiceRequest request, bool replaceTrackedLineItems)
+    private async Task<string> GetCompanyDefaultCurrencyCodeAsync(Guid companyId, CancellationToken cancellationToken)
+    {
+        var defaultCurrencyCode = await dbContext.Companies
+            .Where(company => company.Id == companyId)
+            .Select(company => company.DefaultCurrencyCode)
+            .SingleAsync(cancellationToken);
+
+        return NormalizeCurrencyCode(defaultCurrencyCode, "MYR");
+    }
+
+    private void Apply(
+        Invoice invoice,
+        UpsertInvoiceRequest request,
+        bool replaceTrackedLineItems,
+        string defaultCurrencyCode)
     {
         invoice.CustomerName = NormalizeRequired(request.CustomerName);
         invoice.CustomerRegistrationNumber = NormalizeOptional(request.CustomerRegistrationNumber);
         invoice.CustomerTaxIdentificationNumber = NormalizeOptional(request.CustomerTaxIdentificationNumber);
         invoice.IssueDate = request.IssueDate;
         invoice.DueDate = request.DueDate;
-        invoice.CurrencyCode = NormalizeCurrencyCode(request.CurrencyCode);
+        invoice.CurrencyCode = NormalizeCurrencyCode(request.CurrencyCode, defaultCurrencyCode);
 
         if (replaceTrackedLineItems)
         {
@@ -232,9 +248,16 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
         return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     }
 
-    private static string NormalizeCurrencyCode(string value)
+    private static string NormalizeCurrencyCode(string? value, string defaultCurrencyCode)
     {
-        return string.IsNullOrWhiteSpace(value) ? "MYR" : value.Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.IsNullOrWhiteSpace(defaultCurrencyCode)
+                ? "MYR"
+                : defaultCurrencyCode.Trim().ToUpperInvariant();
+        }
+
+        return value.Trim().ToUpperInvariant();
     }
 
 }
