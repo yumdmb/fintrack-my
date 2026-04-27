@@ -1,4 +1,5 @@
 using Fintrack.Api.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
@@ -58,4 +59,54 @@ public sealed class FintrackApiFactory : WebApplicationFactory<Program>
             _connection.Dispose();
         }
     }
+
+    public async Task<SeededTestUser> CreateUserInNewCompanyAsync(
+        string email,
+        string password,
+        string role,
+        string? companyName = null)
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        var company = new Company
+        {
+            Name = companyName ?? $"Company {Guid.NewGuid():N}"
+        };
+
+        dbContext.Companies.Add(company);
+        await dbContext.SaveChangesAsync();
+
+        var user = new ApplicationUser
+        {
+            Email = email,
+            UserName = email,
+            EmailConfirmed = true,
+            CompanyId = company.Id
+        };
+
+        ThrowIfFailed(await userManager.CreateAsync(user, password), "Failed to create seeded test user.");
+        ThrowIfFailed(await userManager.AddToRoleAsync(user, role), "Failed to assign seeded test user role.");
+
+        return new SeededTestUser(user.Id, email, company.Id, company.Name, [role]);
+    }
+
+    private static void ThrowIfFailed(IdentityResult result, string message)
+    {
+        if (result.Succeeded)
+        {
+            return;
+        }
+
+        var errors = string.Join("; ", result.Errors.Select(error => error.Description));
+        throw new InvalidOperationException($"{message} {errors}");
+    }
 }
+
+public sealed record SeededTestUser(
+    Guid Id,
+    string Email,
+    Guid CompanyId,
+    string CompanyName,
+    IReadOnlyCollection<string> Roles);

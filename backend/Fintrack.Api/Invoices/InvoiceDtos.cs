@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Fintrack.Api.Finance;
 
 namespace Fintrack.Api.Invoices;
 
@@ -37,7 +38,7 @@ public sealed class UpsertInvoiceRequest : IValidatableObject
     }
 }
 
-public sealed class UpsertInvoiceLineItemRequest
+public sealed class UpsertInvoiceLineItemRequest : IValidatableObject
 {
     [Required, StringLength(300)]
     public string Description { get; init; } = string.Empty;
@@ -50,6 +51,30 @@ public sealed class UpsertInvoiceLineItemRequest
 
     [Range(typeof(decimal), "0", "100")]
     public decimal TaxRate { get; init; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!FinanceValueRules.HasMaxScale(Quantity, 4))
+        {
+            yield return new ValidationResult(
+                "Quantity cannot contain more than 4 decimal places.",
+                [nameof(Quantity)]);
+        }
+
+        if (!FinanceValueRules.HasMaxScale(UnitPrice, 2))
+        {
+            yield return new ValidationResult(
+                "Unit price cannot contain more than 2 decimal places.",
+                [nameof(UnitPrice)]);
+        }
+
+        if (!FinanceValueRules.HasMaxScale(TaxRate, 4))
+        {
+            yield return new ValidationResult(
+                "Tax rate cannot contain more than 4 decimal places.",
+                [nameof(TaxRate)]);
+        }
+    }
 }
 
 public sealed record InvoiceSummaryResponse(

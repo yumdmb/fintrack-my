@@ -1,4 +1,5 @@
 using Fintrack.Api.Data;
+using Fintrack.Api.Finance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fintrack.Api.Invoices;
@@ -162,15 +163,16 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
             }
         }
 
-        invoice.Subtotal = invoice.LineItems.Sum(lineItem => lineItem.LineSubtotal);
-        invoice.TaxTotal = invoice.LineItems.Sum(lineItem => lineItem.TaxAmount);
-        invoice.GrandTotal = invoice.LineItems.Sum(lineItem => lineItem.LineTotal);
+        var totals = CalculateTotals(invoice.LineItems);
+        invoice.Subtotal = totals.Subtotal;
+        invoice.TaxTotal = totals.TaxTotal;
+        invoice.GrandTotal = totals.GrandTotal;
     }
 
     private static InvoiceLineItem CreateLineItem(UpsertInvoiceLineItemRequest request)
     {
-        var lineSubtotal = RoundCurrency(request.Quantity * request.UnitPrice);
-        var taxAmount = RoundCurrency(lineSubtotal * request.TaxRate / 100m);
+        var lineSubtotal = FinanceValueRules.RoundCurrency(request.Quantity * request.UnitPrice);
+        var taxAmount = FinanceValueRules.RoundCurrency(lineSubtotal * request.TaxRate / 100m);
 
         return new InvoiceLineItem
         {
@@ -180,8 +182,17 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
             TaxRate = request.TaxRate,
             LineSubtotal = lineSubtotal,
             TaxAmount = taxAmount,
-            LineTotal = lineSubtotal + taxAmount
+            LineTotal = FinanceValueRules.RoundCurrency(lineSubtotal + taxAmount)
         };
+    }
+
+    private static (decimal Subtotal, decimal TaxTotal, decimal GrandTotal) CalculateTotals(
+        IEnumerable<InvoiceLineItem> lineItems)
+    {
+        return (
+            FinanceValueRules.RoundCurrency(lineItems.Sum(lineItem => lineItem.LineSubtotal)),
+            FinanceValueRules.RoundCurrency(lineItems.Sum(lineItem => lineItem.TaxAmount)),
+            FinanceValueRules.RoundCurrency(lineItems.Sum(lineItem => lineItem.LineTotal)));
     }
 
     private static InvoiceResponse Map(Invoice invoice)
@@ -226,8 +237,4 @@ public sealed class InvoiceService(ApplicationDbContext dbContext)
         return string.IsNullOrWhiteSpace(value) ? "MYR" : value.Trim().ToUpperInvariant();
     }
 
-    private static decimal RoundCurrency(decimal value)
-    {
-        return Math.Round(value, 2, MidpointRounding.AwayFromZero);
-    }
 }

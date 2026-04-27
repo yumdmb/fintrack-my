@@ -2,7 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Fintrack.Api.Auth;
+using Fintrack.Api.Data;
 using Fintrack.Api.Invoices;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Fintrack.Api.Tests;
 
@@ -29,6 +31,42 @@ public sealed class InvoiceEndpointTests(FintrackApiFactory factory) : IClassFix
 
         Assert.Equal(created.Id, fetched.Id);
         Assert.Equal(created.LineItems.Count, fetched.LineItems.Count);
+    }
+
+    [Fact]
+    public async Task Create_WithRoundedFinanceValues_ComputesServerSideTotals()
+    {
+        var auth = await SignInAsAdminAsync();
+        var createRequest = new UpsertInvoiceRequest
+        {
+            InvoiceNumber = $"INV-{Guid.NewGuid():N}",
+            CustomerName = "Precision Customer Sdn. Bhd.",
+            IssueDate = new DateOnly(2026, 4, 24),
+            CurrencyCode = "MYR",
+            LineItems =
+            [
+                new UpsertInvoiceLineItemRequest
+                {
+                    Description = "Rounded quantity and price",
+                    Quantity = 1.2345m,
+                    UnitPrice = 10.01m,
+                    TaxRate = 6.5m
+                },
+                new UpsertInvoiceLineItemRequest
+                {
+                    Description = "Second line",
+                    Quantity = 2m,
+                    UnitPrice = 5.55m,
+                    TaxRate = 0m
+                }
+            ]
+        };
+
+        var created = await SendJsonAsync<InvoiceResponse>(HttpMethod.Post, "/api/invoices", createRequest, auth.AccessToken);
+
+        Assert.Equal(23.46m, created.Subtotal);
+        Assert.Equal(0.8m, created.TaxTotal);
+        Assert.Equal(24.26m, created.GrandTotal);
     }
 
     [Fact]
@@ -115,6 +153,63 @@ public sealed class InvoiceEndpointTests(FintrackApiFactory factory) : IClassFix
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task Create_WithInvalidFinancePrecision_ReturnsBadRequest()
+    {
+        var auth = await SignInAsAdminAsync();
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/invoices")
+        {
+            Content = JsonContent.Create(new UpsertInvoiceRequest
+            {
+                InvoiceNumber = $"INV-{Guid.NewGuid():N}",
+                CustomerName = "Invalid Precision Customer",
+                IssueDate = new DateOnly(2026, 4, 24),
+                CurrencyCode = "MYR",
+                LineItems =
+                [
+                    new UpsertInvoiceLineItemRequest
+                    {
+                        Description = "Too many decimal places",
+                        Quantity = 1.23456m,
+                        UnitPrice = 10m,
+                        TaxRate = 6m
+                    }
+                ]
+            })
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Contains("LineItems[0].Quantity", problem.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Get_ForeignCompanyInvoice_ReturnsNotFound()
+    {
+        var foreignEmail = $"invoice-foreign-{Guid.NewGuid():N}@fintrack.local";
+        var foreignUser = await factory.CreateUserInNewCompanyAsync(foreignEmail, "InvoiceUser123!", AppRoles.Accountant);
+        var foreignAuth = await SignInAsync(foreignEmail, "InvoiceUser123!");
+        var foreignInvoice = await SendJsonAsync<InvoiceResponse>(
+            HttpMethod.Post,
+            "/api/invoices",
+            CreateInvoiceRequest($"INV-{Guid.NewGuid():N}"),
+            foreignAuth.AccessToken);
+
+        var adminAuth = await SignInAsAdminAsync();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/invoices/{foreignInvoice.Id}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminAuth.AccessToken);
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.NotEqual(adminAuth.User.CompanyId, foreignUser.CompanyId);
+    }
+
     private static UpsertInvoiceRequest CreateInvoiceRequest(string invoiceNumber)
     {
         return new UpsertInvoiceRequest
@@ -148,9 +243,12 @@ public sealed class InvoiceEndpointTests(FintrackApiFactory factory) : IClassFix
 
     private async Task<AuthResponse> SignInAsAdminAsync()
     {
-        var response = await _client.PostAsJsonAsync("/api/auth/sign-in", new SignInRequest(
-            FintrackApiFactory.AdminEmail,
-            FintrackApiFactory.AdminPassword));
+        return await SignInAsync(FintrackApiFactory.AdminEmail, FintrackApiFactory.AdminPassword);
+    }
+
+    private async Task<AuthResponse> SignInAsync(string email, string password)
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/sign-in", new SignInRequest(email, password));
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<AuthResponse>()
