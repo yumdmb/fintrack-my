@@ -35,7 +35,34 @@ compose.yaml
 - Node.js 22+ and npm
 - Docker Desktop or Docker Engine with Compose
 
-## Local startup
+## Quick start
+
+Run these commands from the repository root:
+
+```powershell
+dotnet restore backend/Fintrack.slnx
+npm install --prefix frontend
+.\scripts\dev-up.ps1
+.\scripts\set-dev-secrets.ps1
+```
+
+After that, use two terminals:
+
+Terminal 1, start the backend:
+
+```powershell
+dotnet run --project backend/Fintrack.Api
+```
+
+Terminal 2, start the frontend:
+
+```powershell
+npm run dev --prefix frontend
+```
+
+Then open `http://localhost:5173`.
+
+## Local startup details
 
 1. Start PostgreSQL:
 
@@ -60,6 +87,20 @@ dotnet run --project backend/Fintrack.Api
 ```powershell
 npm run dev --prefix frontend
 ```
+
+## What gets initialized automatically
+
+- PostgreSQL runs in Docker on `localhost:5432`
+- The backend applies EF Core migrations automatically on startup in development
+- The backend seeds roles automatically: `admin`, `accountant`, `staff`
+- The backend creates the bootstrap admin user automatically if it does not already exist
+
+## Seeded sign-in
+
+Use these development credentials after the backend starts:
+
+- Email: `admin@fintrack.local`
+- Password: `ChangeMe123!`
 
 ## Development URLs
 
@@ -96,6 +137,14 @@ VITE_PROXY_TARGET=http://localhost:5232
 ## Seeded admin bootstrap path
 
 The workspace now includes a repeatable configuration path for the initial development administrator via `.\scripts\set-dev-secrets.ps1`. The actual Identity-backed role and admin seeding flow will be wired in the next task group, but the credentials and company bootstrap values are already standardized and documented inside the single backend project setup.
+
+## Stop the stack
+
+Stop the backend and frontend with `Ctrl+C`, then stop PostgreSQL with:
+
+```powershell
+.\scripts\dev-down.ps1
+```
 
 ## Useful commands
 

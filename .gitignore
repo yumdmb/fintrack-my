@@ -9,3 +9,5 @@ frontend/dist/
 *.user
 *.local
 Learning/
+.agents/skills
+skills-lock.json

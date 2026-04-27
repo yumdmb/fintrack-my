@@ -2,15 +2,14 @@ import { Link } from 'react-router-dom';
 
 export function NotFoundPage() {
     return (
-        <section className="card">
-            <span className="card__eyebrow">Not found</span>
-            <h3>That route is outside the current bootstrap.</h3>
-            <p>
-                Return to the dashboard and keep building from the scaffold that is already wired into the app
-                shell.
+        <section className="card" style={{ maxWidth: '480px' }}>
+            <span className="eyebrow">404</span>
+            <h3>Page not found</h3>
+            <p style={{ marginTop: '0.5rem' }}>
+                This route does not exist. Return to the workspace to continue.
             </p>
-            <Link className="inline-link" to="/dashboard">
-                Back to dashboard
+            <Link className="inline-link" to="/" style={{ display: 'inline-block', marginTop: '1rem' }}>
+                Back to workspace
             </Link>
         </section>
     );

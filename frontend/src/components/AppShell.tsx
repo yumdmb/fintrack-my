@@ -1,55 +1,58 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { appConfig } from '../lib/config';
+import { useAuth } from '../app/auth';
+import type { UserRole } from '../lib/api';
 
 const navigation = [
-    { to: '/dashboard', label: 'Dashboard' },
-    { to: '/invoices', label: 'Invoices' },
-    { to: '/expenses', label: 'Expenses' },
-    { to: '/team', label: 'Team' },
+    { to: '/dashboard', label: 'Dashboard', roles: ['admin', 'accountant'] satisfies UserRole[] },
+    { to: '/invoices', label: 'Invoices', roles: ['admin', 'accountant', 'staff'] satisfies UserRole[] },
+    { to: '/expenses', label: 'Expenses', roles: ['admin', 'accountant', 'staff'] satisfies UserRole[] },
 ];
 
 export function AppShell() {
+    const auth = useAuth();
+
+    const visibleNavigation = navigation.filter((item) =>
+        item.roles.some((role) => auth.user?.roles.includes(role)));
+
     return (
         <div className="shell">
-            <aside className="sidebar">
-                <div className="sidebar__brand">
-                    <span className="sidebar__eyebrow">Bootstrap</span>
-                    <h1>Fintrack</h1>
-                    <p>Malaysia-ready e-invoice and expense workflows for ASP.NET Core practice.</p>
+            <aside className="shell__sidebar">
+                <div className="brand-block">
+                    <div className="brand-block__name">Fintrack</div>
+                    <div className="brand-block__tagline">Invoice &amp; expense management</div>
                 </div>
 
-                <nav className="nav" aria-label="Primary navigation">
-                    {navigation.map((item) => (
+                <nav className="nav-list" aria-label="Primary navigation">
+                    {visibleNavigation.map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}
                             className={({ isActive }) =>
-                                isActive ? 'nav__link nav__link--active' : 'nav__link'
+                                isActive ? 'nav-item nav-item--active' : 'nav-item'
                             }
                         >
-                            {item.label}
+                            <span>{item.label}</span>
                         </NavLink>
                     ))}
                 </nav>
 
-                <div className="sidebar__meta">
-                    <span className="sidebar__meta-label">API base URL</span>
-                    <code>{appConfig.apiBaseUrl}</code>
+                <div className="account-block">
+                    <div className="account-block__company">{auth.user?.companyName}</div>
+                    <div className="account-block__email">{auth.user?.email}</div>
+                    <div className="account-block__roles">
+                        {auth.user?.roles.map((role) => (
+                            <span key={role} className="role-tag">
+                                {role}
+                            </span>
+                        ))}
+                    </div>
+                    <button className="button button--ghost button--block" type="button" onClick={auth.signOut}>
+                        Sign out
+                    </button>
                 </div>
             </aside>
 
-            <main className="content">
-                <header className="hero">
-                    <div>
-                        <span className="hero__eyebrow">Workspace Shell</span>
-                        <h2>Backend and frontend foundations are wired for the next feature slices.</h2>
-                    </div>
-                    <p>
-                        Use the scaffold to add identity, invoice, expense, export, and dashboard features
-                        without reworking the host or client shell first.
-                    </p>
-                </header>
-
+            <main className="shell__content">
                 <Outlet />
             </main>
         </div>
