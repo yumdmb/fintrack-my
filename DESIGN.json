@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-28T02:22:00+08:00",
+  "title": "Design System: Fintrack",
+  "extensions": {
+    "colorMeta": {
+      "fired-clay": {
+        "role": "primary",
+        "displayName": "Fired Clay",
+        "canonical": "oklch(0.58 0.14 28)",
+        "tonalRamp": [
+          "oklch(0.20 0.08 28)",
+          "oklch(0.30 0.10 28)",
+          "oklch(0.40 0.12 28)",
+          "oklch(0.52 0.14 28)",
+          "oklch(0.58 0.14 28)",
+          "oklch(0.68 0.12 28)",
+          "oklch(0.80 0.08 28)",
+          "oklch(0.92 0.04 28)"
+        ]
+      },
+      "parchment-white": {
+        "role": "neutral",
+        "displayName": "Parchment White",
+        "canonical": "oklch(0.975 0.006 75)",
+        "tonalRamp": [
+          "oklch(0.22 0.008 75)",
+          "oklch(0.35 0.008 75)",
+          "oklch(0.50 0.007 75)",
+          "oklch(0.65 0.007 75)",
+          "oklch(0.78 0.007 75)",
+          "oklch(0.88 0.006 75)",
+          "oklch(0.955 0.006 75)",
+          "oklch(0.975 0.006 75)"
+        ]
+      },
+      "warm-graphite": {
+        "role": "neutral",
+        "displayName": "Warm Graphite",
+        "canonical": "oklch(0.22 0.008 75)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 75)",
+          "oklch(0.22 0.008 75)",
+          "oklch(0.35 0.008 75)",
+          "oklch(0.48 0.008 75)",
+          "oklch(0.58 0.007 75)",
+          "oklch(0.70 0.006 75)",
+          "oklch(0.82 0.005 75)",
+          "oklch(0.92 0.004 75)"
+        ]
+      },
+      "jade-confirm": {
+        "role": "tertiary",
+        "displayName": "Jade Confirm",
+        "canonical": "oklch(0.55 0.14 155)",
+        "tonalRamp": [
+          "oklch(0.20 0.08 155)",
+          "oklch(0.30 0.10 155)",
+          "oklch(0.40 0.12 155)",
+          "oklch(0.50 0.14 155)",
+          "oklch(0.55 0.14 155)",
+          "oklch(0.65 0.12 155)",
+          "oklch(0.78 0.08 155)",
+          "oklch(0.92 0.04 155)"
+        ]
+      },
+      "alert-ember": {
+        "role": "tertiary",
+        "displayName": "Alert Ember",
+        "canonical": "oklch(0.55 0.16 25)",
+        "tonalRamp": [
+          "oklch(0.20 0.08 25)",
+          "oklch(0.30 0.10 25)",
+          "oklch(0.40 0.12 25)",
+          "oklch(0.48 0.14 25)",
+          "oklch(0.55 0.16 25)",
+          "oklch(0.65 0.12 25)",
+          "oklch(0.78 0.08 25)",
+          "oklch(0.92 0.04 25)"
+        ]
+      },
+      "cool-slate": {
+        "role": "tertiary",
+        "displayName": "Cool Slate",
+        "canonical": "oklch(0.65 0.08 220)",
+        "tonalRamp": [
+          "oklch(0.20 0.04 220)",
+          "oklch(0.30 0.05 220)",
+          "oklch(0.40 0.06 220)",
+          "oklch(0.52 0.07 220)",
+          "oklch(0.65 0.08 220)",
+          "oklch(0.75 0.06 220)",
+          "oklch(0.85 0.04 220)",
+          "oklch(0.93 0.02 220)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "page-title": { "displayName": "Page Title", "purpose": "Top-level page identifiers. One per view." },
+      "heading": { "displayName": "Heading", "purpose": "Section headings and stat cell values." },
+      "title": { "displayName": "Title", "purpose": "Panel headings and invoice numbers in detail view." },
+      "body": { "displayName": "Body", "purpose": "Form labels, descriptions, and ledger item names. Max line length 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "Section bar titles, eyebrow labels, role tags. Always uppercase." },
+      "caption": { "displayName": "Caption", "purpose": "Timestamps, metadata notes, and detail notes." }
+    },
+    "shadows": [
+      { "name": "shadow-sm", "value": "0 1px 2px oklch(0.22 0.008 75 / 0.04)", "purpose": "Default on cards and panels. Barely perceptible structural separation." },
+      { "name": "shadow-md", "value": "0 2px 8px oklch(0.22 0.008 75 / 0.06)", "purpose": "Hover elevation on interactive elements." },
+      { "name": "shadow-lg", "value": "0 4px 16px oklch(0.22 0.008 75 / 0.08)", "purpose": "Auth card only. Single focal element floats above the page." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "ease-out", "purpose": "Default easing for all interactive state transitions." },
+      { "name": "duration-standard", "value": "150ms", "purpose": "Button, nav, and input state transitions." },
+      { "name": "duration-chart", "value": "300ms", "purpose": "Trend bar height animation. Uses cubic-bezier(0.16, 1, 0.3, 1) for exponential ease-out." }
+    ],
+    "breakpoints": [
+      { "name": "lg", "value": "1280px" },
+      { "name": "md", "value": "960px" },
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The sole saturated element in any default view. Used for the primary action on each screen.",
+      "html": "<button class=\"ds-btn-primary\">Create invoice</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 1rem; border: 1px solid oklch(0.58 0.14 28); border-radius: 0.5rem; background: oklch(0.58 0.14 28); color: oklch(0.99 0.005 75); font-size: 0.8125rem; font-weight: 600; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; white-space: nowrap; } .ds-btn-primary:hover { background: oklch(0.52 0.14 28); border-color: oklch(0.52 0.14 28); box-shadow: 0 1px 2px oklch(0.22 0.008 75 / 0.04); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.58 0.14 28 / 0.08); } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral bordered button for secondary actions like New, Refresh, and Finalize.",
+      "html": "<button class=\"ds-btn-secondary\">Refresh</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 1rem; border: 1px solid oklch(0.88 0.008 75); border-radius: 0.5rem; background: oklch(0.99 0.004 75); color: oklch(0.22 0.008 75); font-size: 0.8125rem; font-weight: 600; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; white-space: nowrap; } .ds-btn-secondary:hover { border-color: oklch(0.78 0.012 75); background: oklch(0.945 0.01 75); box-shadow: 0 1px 2px oklch(0.22 0.008 75 / 0.04); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.58 0.14 28 / 0.08); } .ds-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Transparent button for tertiary actions like export format selection and line item removal.",
+      "html": "<button class=\"ds-btn-ghost\">JSON</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 1rem; border: 1px solid transparent; border-radius: 0.5rem; background: transparent; color: oklch(0.42 0.008 75); font-size: 0.8125rem; font-weight: 600; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out, color 150ms ease-out; white-space: nowrap; } .ds-btn-ghost:hover { background: oklch(0.955 0.008 75); color: oklch(0.22 0.008 75); } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.58 0.14 28 / 0.08); } .ds-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action button for delete operations. Alert Ember on tinted background.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 1rem; border: 1px solid oklch(0.55 0.16 25 / 0.15); border-radius: 0.5rem; background: oklch(0.55 0.16 25 / 0.08); color: oklch(0.55 0.16 25); font-size: 0.8125rem; font-weight: 600; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out; white-space: nowrap; } .ds-btn-danger:hover { background: oklch(0.55 0.16 25 / 0.14); } .ds-btn-danger:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(0.55 0.16 25 / 0.12); } .ds-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard form input for text, date, and number fields. Focus ring uses Fired Clay.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Invoice number</span><input class=\"ds-field-input\" type=\"text\" value=\"INV-2026-0042\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; } .ds-field-label { font-size: 0.8125rem; font-weight: 500; color: oklch(0.42 0.008 75); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; } .ds-field-input { width: 100%; height: 40px; padding: 0 0.75rem; border: 1px solid oklch(0.88 0.008 75); border-radius: 0.5rem; background: oklch(0.99 0.004 75); color: oklch(0.22 0.008 75); font-size: 0.875rem; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; outline: none; transition: border-color 150ms ease-out, box-shadow 150ms ease-out; } .ds-field-input:focus { border-color: oklch(0.58 0.14 28); box-shadow: 0 0 0 3px oklch(0.58 0.14 28 / 0.08); } .ds-field-input::placeholder { color: oklch(0.58 0.006 75); }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Sidebar navigation link. Active state uses Fired Clay tint as the only color in the sidebar chrome.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\">Dashboard</a><a class=\"ds-nav-item ds-nav-item--active\" href=\"#\">Invoices</a><a class=\"ds-nav-item\" href=\"#\">Expenses</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; } .ds-nav-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: oklch(0.42 0.008 75); font-size: 0.875rem; font-weight: 500; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; text-decoration: none; border: 1px solid transparent; transition: background 150ms ease-out, color 150ms ease-out; } .ds-nav-item:hover { background: oklch(0.945 0.01 75); color: oklch(0.22 0.008 75); } .ds-nav-item--active { background: oklch(0.58 0.14 28 / 0.08); color: oklch(0.58 0.14 28); font-weight: 600; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Universal container for content sections. Rice Paper on Parchment White with barely-there shadow.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-section-bar\"><span class=\"ds-section-title\">Export desk</span></div><p class=\"ds-body\">Content area</p></section>",
+      "css": ".ds-panel { background: oklch(0.99 0.004 75); border: 1px solid oklch(0.88 0.008 75); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 2px oklch(0.22 0.008 75 / 0.04); } .ds-section-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; } .ds-section-title { font-size: 0.8125rem; font-weight: 600; color: oklch(0.58 0.006 75); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; } .ds-body { color: oklch(0.42 0.008 75); font-size: 0.875rem; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Stat Cell",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Dashboard metric cell. Numbers render at Heading size with tabular numerals for vertical alignment.",
+      "html": "<article class=\"ds-stat\"><span class=\"ds-stat-label\">Revenue</span><strong class=\"ds-stat-value\">RM 24,580.00</strong><span class=\"ds-stat-note\">1 Apr – 30 Apr 2026</span></article>",
+      "css": ".ds-stat { padding: 1rem 1.5rem; background: oklch(0.99 0.004 75); border: 1px solid oklch(0.88 0.008 75); border-radius: 0.75rem; } .ds-stat-label { display: block; font-size: 0.75rem; font-weight: 600; color: oklch(0.58 0.006 75); text-transform: uppercase; letter-spacing: 0.04em; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; } .ds-stat-value { display: block; margin-top: 0.25rem; font-size: 1.44rem; font-weight: 700; color: oklch(0.22 0.008 75); font-variant-numeric: tabular-nums; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; } .ds-stat-note { display: block; font-size: 0.75rem; color: oklch(0.58 0.006 75); margin-top: 2px; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Paper Office",
+    "overview": "Fintrack's interface channels the feeling of high-quality stationery: warm cream paper, crisp ink, no clutter. Every surface carries the quiet authority of a well-kept ledger. The system is built for a Malaysian small business owner seated at a desk during business hours, working on a standard monitor in a well-lit office. That scene demands a light mode with warm, low-chroma neutrals that read clearly under natural and fluorescent light.\n\nThe system explicitly rejects generic SaaS dashboards with big gradient numbers and icon grids; overly playful consumer-app aesthetics with rounded everything and pastel confetti; and cluttered legacy accounting software that exposes every possible field on one screen. If someone can guess the palette from the category name alone, the design has failed. Fintrack breaks that reflex with warm stone neutrals and a single fired-clay accent that reads more like architecture than banking.",
+    "keyCharacteristics": [
+      "Light mode, warm-tinted neutrals throughout; never pure white, never pure black",
+      "Single accent color (Fired Clay terracotta) used sparingly on primary actions and active states only",
+      "Numbers as primary content: tabular-nums, high-weight, prominent positioning",
+      "Structure through spacing and weight, never through gradients, glows, or ornamental borders",
+      "Flat by default; shadows appear only as structural hints, never as decoration"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Fired Clay is the only saturated color at rest on any screen. Its presence means 'act here.' If a second saturated color appears at rest, the hierarchy breaks.", "section": "colors" },
+      { "name": "The Warm Neutral Rule", "body": "Every achromatic value carries chroma 0.004-0.012 at hue 75. Pure #000 and #fff are prohibited. This is what makes surfaces feel like paper instead of screens.", "section": "colors" },
+      { "name": "The Scale Ratio Rule", "body": "The type scale follows a 1.2 ratio (minor third): 0.75 > 0.875 > 1 > 1.2 > 1.44 > 1.728. Fixed rem steps, not fluid.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Every monetary value renders with font-variant-numeric: tabular-nums so columns of numbers align vertically without layout shift. Non-negotiable for financial data.", "section": "typography" },
+      { "name": "The Flat Desk Rule", "body": "Surfaces are flat at rest. Shadow Small is so subtle it's more texture than elevation. If a shadow is visible enough to cast a floating impression, it's too heavy.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use font-variant-numeric: tabular-nums on every monetary value.",
+      "Do tint every neutral toward hue 75 with chroma 0.004-0.012. Paper, not screen.",
+      "Do keep Fired Clay under 10% of any screen's surface area.",
+      "Do use tonal layering (page > card > inset) to convey depth before reaching for shadows.",
+      "Do pair color status indicators with text labels.",
+      "Do respect prefers-reduced-motion with a blanket transition-duration: 0.01ms override.",
+      "Do keep section bar titles uppercase, tracked, and in Driftwood Tertiary.",
+      "Do use consistent 150ms ease-out timing on all interactive state transitions."
+    ],
+    "donts": [
+      "Don't use #000 or #fff.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe.",
+      "Don't apply background-clip: text with a gradient.",
+      "Don't use glassmorphism, backdrop-filter, or blur effects.",
+      "Don't build hero-metric templates (big gradient number, small label, sparkline).",
+      "Don't create identical card grids with icon + heading + text.",
+      "Don't use display or serif fonts in UI labels, buttons, or data fields.",
+      "Don't introduce a second saturated color at rest.",
+      "Don't animate CSS layout properties.",
+      "Don't use em dashes in UI copy.",
+      "Don't nest cards inside cards.",
+      "Don't apply the navy+gold, dark-blue+teal, or any other category-reflex finance palette."
+    ]
+  }
+}
