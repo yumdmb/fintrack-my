@@ -5,6 +5,7 @@ import { AppShell } from '../components/AppShell';
 import { DashboardPage } from '../pages/DashboardPage';
 import { ExpensesPage } from '../pages/ExpensesPage';
 import { InvoicesPage } from '../pages/InvoicesPage';
+import { LandingPage } from '../pages/LandingPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { SignInPage } from '../pages/SignInPage';
 
@@ -18,11 +19,12 @@ function DefaultAuthenticatedPage() {
 export function AppRouter() {
     return (
         <Routes>
+            <Route index element={<LandingPage />} />
             <Route path="/sign-in" element={<SignInPage />} />
 
             <Route element={<ProtectedRoute />}>
                 <Route element={<AppShell />}>
-                    <Route index element={<DefaultAuthenticatedPage />} />
+                    <Route path="/home" element={<DefaultAuthenticatedPage />} />
                     <Route
                         path="/dashboard"
                         element={
