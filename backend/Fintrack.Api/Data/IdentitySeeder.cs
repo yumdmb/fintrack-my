@@ -48,6 +48,12 @@ public static class IdentitySeeder
                 ThrowIfFailed(await userManager.AddToRoleAsync(existingUser, AppRoles.Admin), "Failed to assign bootstrap admin role.");
             }
 
+            var existingCompany = await dbContext.Companies.SingleAsync(
+                company => company.Id == existingUser.CompanyId,
+                cancellationToken);
+            ApplyBootstrapCompanyConfiguration(existingCompany, bootstrapOptions);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
             return;
         }
 
@@ -55,6 +61,7 @@ public static class IdentitySeeder
         {
             Name = bootstrapOptions.CompanyName
         };
+        ApplyBootstrapCompanyConfiguration(company, bootstrapOptions);
         dbContext.Companies.Add(company);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -68,6 +75,29 @@ public static class IdentitySeeder
 
         ThrowIfFailed(await userManager.CreateAsync(adminUser, bootstrapOptions.Password), "Failed to create bootstrap admin user.");
         ThrowIfFailed(await userManager.AddToRoleAsync(adminUser, AppRoles.Admin), "Failed to assign bootstrap admin role.");
+    }
+
+    private static void ApplyBootstrapCompanyConfiguration(Company company, BootstrapAdminOptions bootstrapOptions)
+    {
+        company.Name = bootstrapOptions.CompanyName;
+        company.RegistrationNumber = NormalizeOptional(bootstrapOptions.RegistrationNumber);
+        company.TaxIdentificationNumber = NormalizeOptional(bootstrapOptions.TaxIdentificationNumber);
+        company.SalesAndServiceTaxNumber = NormalizeOptional(bootstrapOptions.SalesAndServiceTaxNumber);
+        company.DefaultCurrencyCode = NormalizeCurrencyCode(bootstrapOptions.DefaultCurrencyCode);
+    }
+
+    private static string? NormalizeOptional(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? null
+            : value.Trim();
+    }
+
+    private static string NormalizeCurrencyCode(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "MYR"
+            : value.Trim().ToUpperInvariant();
     }
 
     private static void ThrowIfFailed(IdentityResult result, string message)

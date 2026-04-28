@@ -26,5 +26,9 @@ public sealed class IdentityBootstrapTests(FintrackApiFactory factory) : IClassF
         Assert.NotNull(admin);
         Assert.True(await userManager.IsInRoleAsync(admin, AppRoles.Admin));
         Assert.Equal(FintrackApiFactory.CompanyName, admin.Company.Name);
+        Assert.Equal(FintrackApiFactory.CompanyRegistrationNumber, admin.Company.RegistrationNumber);
+        Assert.Equal(FintrackApiFactory.CompanyTaxIdentificationNumber, admin.Company.TaxIdentificationNumber);
+        Assert.Equal(FintrackApiFactory.CompanySalesAndServiceTaxNumber, admin.Company.SalesAndServiceTaxNumber);
+        Assert.Equal(FintrackApiFactory.CompanyDefaultCurrencyCode, admin.Company.DefaultCurrencyCode);
     }
 }

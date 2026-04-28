@@ -15,6 +15,10 @@ public sealed class FintrackApiFactory : WebApplicationFactory<Program>
     public const string AdminEmail = "admin@fintrack.local";
     public const string AdminPassword = "ChangeMe123!";
     public const string CompanyName = "Fintrack Demo Sdn. Bhd.";
+    public const string CompanyRegistrationNumber = "202401000001";
+    public const string CompanyTaxIdentificationNumber = "C1234567890";
+    public const string CompanySalesAndServiceTaxNumber = "SST12345678";
+    public const string CompanyDefaultCurrencyCode = "MYR";
 
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
 
@@ -33,7 +37,11 @@ public sealed class FintrackApiFactory : WebApplicationFactory<Program>
                 ["Jwt:SigningKey"] = "test-signing-key-with-at-least-thirty-two-characters",
                 ["BootstrapAdmin:Email"] = AdminEmail,
                 ["BootstrapAdmin:Password"] = AdminPassword,
-                ["BootstrapAdmin:CompanyName"] = CompanyName
+                ["BootstrapAdmin:CompanyName"] = CompanyName,
+                ["BootstrapAdmin:RegistrationNumber"] = CompanyRegistrationNumber,
+                ["BootstrapAdmin:TaxIdentificationNumber"] = CompanyTaxIdentificationNumber,
+                ["BootstrapAdmin:SalesAndServiceTaxNumber"] = CompanySalesAndServiceTaxNumber,
+                ["BootstrapAdmin:DefaultCurrencyCode"] = CompanyDefaultCurrencyCode
             });
         });
         builder.ConfigureServices(services =>

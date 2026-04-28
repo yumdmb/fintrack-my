@@ -18,6 +18,7 @@ scripts/
   dev-up.ps1
   dev-down.ps1
   set-dev-secrets.ps1
+  verify-local-workflow.ps1
 
 compose.yaml
 ```
@@ -125,6 +126,10 @@ dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "Jwt:
 dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:Email" "admin@fintrack.local"
 dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:Password" "ChangeMe123!"
 dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:CompanyName" "Fintrack Demo Sdn. Bhd."
+dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:RegistrationNumber" "202401000001"
+dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:TaxIdentificationNumber" "C1234567890"
+dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:SalesAndServiceTaxNumber" "SST12345678"
+dotnet user-secrets set --project backend/Fintrack.Api/Fintrack.Api.csproj "BootstrapAdmin:DefaultCurrencyCode" "MYR"
 ```
 
 Frontend environment examples live in [frontend/.env.example](frontend/.env.example):
@@ -146,6 +151,14 @@ Stop the backend and frontend with `Ctrl+C`, then stop PostgreSQL with:
 .\scripts\dev-down.ps1
 ```
 
+## Full local verification
+
+Run this after installing frontend dependencies to boot PostgreSQL, apply development secrets, start the backend and frontend, and execute the sign-in, invoice, expense, dashboard, and export smoke flow through the frontend proxy:
+
+```powershell
+.\scripts\verify-local-workflow.ps1
+```
+
 ## Useful commands
 
 ```powershell
@@ -154,6 +167,7 @@ dotnet build backend/Fintrack.slnx
 dotnet test backend/Fintrack.slnx
 npm run typecheck --prefix frontend
 npm run build --prefix frontend
+.\scripts\verify-local-workflow.ps1
 .\scripts\dev-down.ps1
 ```
 

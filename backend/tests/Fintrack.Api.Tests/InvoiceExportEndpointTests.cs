@@ -90,6 +90,11 @@ public sealed class InvoiceExportEndpointTests(FintrackApiFactory factory) : ICl
     public async Task Finalize_WithMissingComplianceFields_ReturnsValidationFailure()
     {
         var auth = await SignInAsAdminAsync();
+        await factory.ConfigureCompanyComplianceAsync(
+            auth.User.CompanyId,
+            registrationNumber: "",
+            taxIdentificationNumber: "",
+            salesAndServiceTaxNumber: null);
         var created = await SendJsonAsync<InvoiceResponse>(
             HttpMethod.Post,
             "/api/invoices",
